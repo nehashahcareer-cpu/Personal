@@ -26,6 +26,7 @@
     textarea{min-height:80px}
     .success{background:#eaf7ee;color:#145a2b;padding:8px;border-radius:8px}
     footer{font-size:12px;color:#888;margin-top:12px}
+    .session-options{display:flex;gap:8px;flex-direction:column}
     @media (max-width:880px){.card{flex-direction:column}.right{max-width:100%;width:100%}}
   </style>
 </head>
@@ -38,8 +39,8 @@
       <div class="event">
         <div class="icon">📅</div>
         <div>
-          <div style="font-weight:700">Saturday, August 29, 2026</div>
-          <div class="muted">Starts at 4:00 PM</div>
+          <div style="font-weight:700">Sunday, August 9, 2026</div>
+          <div class="muted">Choose lunch or dinner</div>
         </div>
       </div>
 
@@ -53,7 +54,7 @@
 
       <div style="margin-top:22px">
         <h3 style="margin:0 0 6px">Plan</h3>
-        <p class="muted">Welcome drinks, dinner, quick games, and photos. Feel free to bring a small dessert or a family story to share.</p>
+        <p class="muted">Welcome drinks, food, quick games, and photos. Feel free to bring a small dessert or a family story to share.</p>
       </div>
 
     </div>
@@ -85,6 +86,12 @@
           <option value="no">No — I can't make it</option>
           <option value="maybe">Maybe</option>
         </select>
+
+        <label for="session">Which session?</label>
+        <div class="session-options">
+          <label><input type="radio" name="session" value="lunch" checked /> Lunch — 12:30 PM</label>
+          <label><input type="radio" name="session" value="dinner" /> Dinner — 6:30 PM</label>
+        </div>
 
         <label for="notes">Any notes</label>
         <textarea id="notes" placeholder="Dietary needs, questions, or a message"></textarea>
@@ -125,14 +132,35 @@
     const copyBtn = document.getElementById('copyLink');
     const openEmail = document.getElementById('openEmail');
 
+    function getSelectedSession(){
+      const r = document.querySelector('input[name="session"]:checked');
+      return r ? r.value : 'lunch';
+    }
+
     // Load saved
     try{
       const saved = JSON.parse(localStorage.getItem('family_invite_rsvp')||'null');
-      if(saved){nameEl.value = saved.name || ''; emailEl.value = saved.email||''; attendEl.value=saved.attend||'yes'; notesEl.value=saved.notes||''}
+      if(saved){
+        nameEl.value = saved.name || '';
+        emailEl.value = saved.email||'';
+        attendEl.value = saved.attend||'yes';
+        notesEl.value = saved.notes||'';
+        if(saved.session){
+          const s = document.querySelector(`input[name="session"][value="${saved.session}"]`);
+          if(s) s.checked = true;
+        }
+      }
     }catch(e){}
 
     saveBtn.addEventListener('click',()=>{
-      const payload={name:nameEl.value,email:emailEl.value,attend:attendEl.value,notes:notesEl.value,ts:new Date().toISOString()};
+      const payload={
+        name:nameEl.value,
+        email:emailEl.value,
+        attend:attendEl.value,
+        session:getSelectedSession(),
+        notes:notesEl.value,
+        ts:new Date().toISOString()
+      };
       localStorage.setItem('family_invite_rsvp',JSON.stringify(payload));
       msg.style.display='block';
       setTimeout(()=>msg.style.display='none',4000);
@@ -160,8 +188,9 @@
     });
 
     openEmail.addEventListener('click',()=>{
-      const subject = encodeURIComponent("You're invited: Family Gathering");
-      const body = encodeURIComponent("Hi family,%0D%0A%0D%0AYou're invited to our family gathering! View the invitation here: " + window.location.href + "%0D%0A%0D%0ALet me know if you can make it.%0D%0A%0D%0A— [Your Name]");
+      const subject = encodeURIComponent("You're invited: Family Gathering (Aug 9)");
+      const sessionText = getSelectedSession() === 'lunch' ? 'Lunch (12:30 PM)' : 'Dinner (6:30 PM)';
+      const body = encodeURIComponent("Hi family,%0D%0A%0D%0AYou're invited to our family gathering on Sunday, August 9, 2026. I plan to attend the " + sessionText + ".%0D%0A%0D%0AView the invitation here: " + window.location.href + "%0D%0A%0D%0ALet me know if you can make it.%0D%0A%0A— [Your Name]");
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
     });
   </script>
