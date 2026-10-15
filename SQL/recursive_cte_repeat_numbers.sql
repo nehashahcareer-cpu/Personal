@@ -59,12 +59,12 @@ SOLUTION: RECURSIVE CTE
 -----------------------
 */
 
-WITH rescursive AS
+WITH Rescursive AS
 (
     -- Anchor member: initialize repetition count to 1
     SELECT
         int_numbers AS seq_numbers,
-        1 AS repitition
+        1 AS Repitition
     FROM tbl_numbers
 
     UNION ALL
@@ -72,13 +72,13 @@ WITH rescursive AS
     -- Recursive member: increment repetition count
     SELECT
         seq_numbers,
-        repitition + 1 AS repitition
-    FROM rescursive
-    WHERE repitition < seq_numbers
+        Repitition + 1 AS Repitition
+    FROM Rescursive
+    WHERE Repitition < seq_numbers
 )
 SELECT seq_numbers
-FROM rescursive
-ORDER BY seq_numbers, repitition;
+FROM Rescursive
+ORDER BY seq_numbers
 
 
 /* 
