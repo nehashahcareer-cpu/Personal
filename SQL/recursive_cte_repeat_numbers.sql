@@ -57,6 +57,8 @@ int_numbers
 
 SOLUTION: RECURSIVE CTE
 -----------------------
+*/
+
 WITH rescursive AS
 (
     -- Anchor member: initialize repetition count to 1
@@ -79,6 +81,7 @@ FROM rescursive
 ORDER BY seq_numbers, repitition;
 
 
+/* 
 HOW THE SOLUTION WORKS
 ----------------------
 
@@ -96,4 +99,5 @@ HOW THE SOLUTION WORKS
    WHERE repitition < seq_numbers
 
    - Stops generating rows once repitition reaches the number.
+*/
   
