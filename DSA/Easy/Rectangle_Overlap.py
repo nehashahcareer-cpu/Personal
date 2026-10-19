@@ -1,82 +1,86 @@
 
-def rectangle_overlap(a, b):
+def flatten_config(config, prefix=""):
     """
-    Determine whether two axis-aligned rectangles overlap or touch.
+    Flatten a nested dictionary into dot-separated keys.
 
-    Each rectangle is represented by four (x, y) corner coordinates.
-    The corners can be provided in any order.
+    Empty dictionaries are preserved as values.
 
     Args:
-        a (list[tuple[int, int]]): Four corners of rectangle A.
-        b (list[tuple[int, int]]): Four corners of rectangle B.
+        config (dict): The nested dictionary to flatten.
+        prefix (str): Prefix used to build nested keys.
 
     Returns:
-        bool: True if the rectangles overlap or touch;
-              False if they are completely separate.
+        dict: A flattened dictionary with dot-separated keys.
 
     Time Complexity:
-        O(1), because each rectangle has exactly four corners.
+        O(n), where n is the total number of dictionary entries.
 
     Auxiliary Space Complexity:
-        O(1), because only a fixed number of boundary variables are stored.
+        O(d), where d is the maximum nesting depth for the
+        recursion stack, excluding the output and intermediate
+        dictionaries.
     """
 
-    # Step 1: Find the boundaries of rectangle A.
-    a_left = min(point[0] for point in a)
-    a_right = max(point[0] for point in a)
-    a_bottom = min(point[1] for point in a)
-    a_top = max(point[1] for point in a)
+    result = {}
 
-    # Step 2: Find the boundaries of rectangle B.
-    b_left = min(point[0] for point in b)
-    b_right = max(point[0] for point in b)
-    b_bottom = min(point[1] for point in b)
-    b_top = max(point[1] for point in b)
+    # Step 1: Iterate through each key-value pair.
+    for key, value in config.items():
 
-    # Step 3: Check whether the rectangles are completely separate.
-    # Use OR because any one condition is sufficient.
-    if (
-        a_right < b_left       # A is left of B
-        or a_left > b_right    # A is right of B
-        or a_bottom > b_top    # A is above B
-        or a_top < b_bottom    # A is below B
-    ):
-        return False
+        # Step 2: Build the full key using the current prefix.
+        new_key = f"{prefix}.{key}" if prefix else key
 
-    # Step 4: If they are not separate, they overlap or touch.
-    return True
+        # Step 3: Recurse only into non-empty dictionaries.
+        if isinstance(value, dict) and value:
+            nested_result = flatten_config(value, new_key)
+
+            # Step 4: Merge the flattened nested dictionary.
+            result.update(nested_result)
+
+        else:
+            # Step 5: Store leaf values and empty dictionaries.
+            result[new_key] = value
+
+    return result
 
 
 if __name__ == "__main__":
-    # Test 1: Rectangles overlap.
-    a = [(-3, 5), (-3, 2), (0, 5), (0, 2)]
-    b = [(-1, 4), (3, 4), (3, 1), (-1, 1)]
-    assert rectangle_overlap(a, b) is True
+    # Test 1: Basic nested dictionary.
+    config = {"a": {"b": 1}, "c": 2}
+    assert flatten_config(config) == {"a.b": 1, "c": 2}
 
-    # Test 2: Rectangles are completely separate.
-    a = [(0, 4), (0, 2), (2, 4), (2, 2)]
-    b = [(3, 4), (3, 2), (5, 4), (5, 2)]
-    assert rectangle_overlap(a, b) is False
+    # Test 2: Multiple nesting levels.
+    config = {"a": {"b": {"c": 10}}}
+    assert flatten_config(config) == {"a.b.c": 10}
 
-    # Test 3: Rectangles share an edge.
-    a = [(0, 2), (0, 0), (2, 2), (2, 0)]
-    b = [(2, 2), (2, 0), (4, 2), (4, 0)]
-    assert rectangle_overlap(a, b) is True
+    # Test 3: Preserve empty dictionaries.
+    config = {"config": {"a": {}, "b": {"c": {}}}}
+    assert flatten_config(config) == {
+        "config.a": {},
+        "config.b.c": {}
+    }
 
-    # Test 4: Rectangles share only a corner.
-    a = [(0, 2), (0, 0), (2, 2), (2, 0)]
-    b = [(2, 0), (2, -2), (4, 0), (4, -2)]
-    assert rectangle_overlap(a, b) is True
+    # Test 4: Empty input.
+    assert flatten_config({}) == {}
+
+    # Test 5: Non-dictionary values.
+    config = {"name": "Alice", "active": True, "count": 5}
+    assert flatten_config(config) == {
+        "name": "Alice",
+        "active": True,
+        "count": 5
+    }
 
     print("All tests passed!")
 
 
-
 # Interview revision notes
-# - Approach: Find each rectangle's left, right, top, and bottom boundaries using min() and max().
-# - Key insight: Check whether the rectangles are separated horizontally or vertically.
-# - Why or? Any one separation condition means there is no overlap.
-# - Why strict comparisons? Using < and > allows edges and corners to touch while still counting as overlap.
-# - Time complexity: \(O(1)\), because each rectangle always has four corners.
-# - Auxiliary space complexity: \(O(1)\).
-# Interview tip: This is a version of the separating axis principle for axis-aligned rectangles. Instead of directly checking whether they overlap, check whether they are separated.
+# - Approach: Recursively traverse nested dictionaries and build dot-separated keys.
+# - Key insight: Use a prefix to maintain the full path of each nested key.
+# - Why recursion? The nesting depth can vary, so the same logic handles every level.
+# - Why `isinstance(value, dict) and value`?
+#   Recurse into non-empty dictionaries but preserve empty dictionaries as values.
+# - Why `result.update()`? Merge the recursively flattened entries into the current result.
+# - Time complexity: O(n), where n is the total number of dictionary entries.
+# - Auxiliary space complexity: O(d) for the recursion stack, excluding output and intermediate dictionaries.
+# - Edge cases: Empty input, empty nested dictionaries, deeply nested dictionaries, and non-dictionary values.
+# - Interview tip: Clarify whether empty dictionaries should be preserved and whether lists or keys containing dots require special handling.
