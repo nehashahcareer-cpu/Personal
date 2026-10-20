@@ -61,3 +61,25 @@ if __name__ == "__main__":
     assert first_timestamp_at_or_after([], 1000) == 0
 
     print("All tests passed!")
+
+
+# Interview revision notes
+#  1. Approach
+    #  Use binary search to find the first position where timestamps[index] >= target.
+# 2. Key insight
+    # - If timestamps[mid] < target, discard the left half, including mid.
+    # - Otherwise, mid could be the answer, so keep searching to the left.
+    # - Use right = len(timestamps) as an exclusive boundary.
+# 3. Why use right = len(timestamps)?
+    # The answer might be len(timestamps) when every timestamp is smaller than the target. This boundary also handles an empty list naturally.
+# 4. Complexity
+    # Complexity	Cost
+    # Time	\(O(\log n)\)
+    # Auxiliary space	\(O(1)\)
+# 5. Common mistakes to remember
+    # - Returning mid immediately can miss an earlier duplicate.
+    # - Using right = mid - 1 can skip a valid candidate in this particular binary-search pattern.
+    # - Returning mid after the loop can fail for empty lists or targets larger than all elements.
+    # - A TypeError saying target is missing concerns the function call or platform's test harness, not the binary-search algorithm itself.
+# Interview one-liner: “I use lower-bound binary search. When a value is smaller than the target, 
+# I move right; otherwise, I preserve that candidate and search left for the first qualifying index. This runs in \(O(\log n)\) time and \(O(1)\) auxiliary space.”
