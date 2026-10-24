@@ -1,0 +1,5 @@
+Challenge 3: Balancing performance and cost during the move to Fabric
+The challenge: You needed to deliver a usable financial analytics experience while managing performance and platform costs.
+
+How you resolved it: Your project used Spark notebooks in Fabric for data transformation and an existing Analysis Services semantic layer for serving the data. 
+You chose Analysis Services because the Fabric semantic model was performing poorly at the time, and increasing Fabric capacity was expected to cost more.
