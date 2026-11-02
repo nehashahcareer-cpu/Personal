@@ -1,0 +1,8 @@
+Data lake: “A scalable storage foundation for structured, semi-structured, and unstructured data.”
+Data warehouse: “A platform for curated, structured data optimized for business reporting and analytical queries.”
+Data lakehouse: “An architecture combining flexible lake storage with reliable table management and analytical capabilities.”
+Data modeling: “The process of defining data grain, relationships, facts, dimensions, and business definitions for accurate analysis.”
+Delta Lake: “A technology that adds transactional reliability, controlled updates, schema management, and historical versions to lake-based tables.”
+
+
+Final memory: Lake = store. Warehouse = analyze. Lakehouse = combine capabilities. Modeling = structure. Delta Lake = reliable tables.
